@@ -40,6 +40,7 @@ class Compte(AbstractBaseUser, PermissionsMixin):
     recoit_notifications = models.BooleanField(default=True, verbose_name="Recevoir des notifications")
     theme_sombre = models.BooleanField(default=False, verbose_name="Thème sombre activé")
     premiere_connexion = models.BooleanField(default=True, verbose_name="Première connexion")
+    derniere_visite_notifications = models.DateTimeField(default=now, verbose_name="Dernière visite des notifications")
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
