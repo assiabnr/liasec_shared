@@ -260,17 +260,37 @@ class Facture(models.Model):
         ordering = ['-date_upload']
 
 class Notification(models.Model):
-    compte = models.ForeignKey(Compte, on_delete=models.CASCADE, related_name='notifications', verbose_name="Compte concerné")
+    compte = models.ForeignKey(
+        Compte,
+        on_delete=models.CASCADE,
+        related_name='notifications',
+        verbose_name="Compte concerné",
+        null=True, blank=True
+    )
+    pour_tous_admins = models.BooleanField(default=False, verbose_name="Visible par tous les admins")
+    magasin_cible = models.ForeignKey(
+        "Magasin",
+        on_delete=models.CASCADE,
+        null=True, blank=True,
+        verbose_name="Visible pour tous les clients de ce magasin"
+    )
     titre = models.CharField(max_length=255, verbose_name="Titre")
     message = models.TextField(verbose_name="Contenu")
     est_lu = models.BooleanField(default=False, verbose_name="Lu")
     date_creation = models.DateTimeField(auto_now_add=True, verbose_name="Date de création")
 
     def __str__(self):
-        return f"Notification pour {self.compte.email} – {self.titre}"
+        if self.pour_tous_admins:
+            return f"[TOUS ADMINS] {self.titre}"
+        elif self.magasin_cible:
+            return f"[MAGASIN {self.magasin_cible.nom}] {self.titre}"
+        elif self.compte:
+            return f"Notification pour {self.compte.email} – {self.titre}"
+        return self.titre
 
     class Meta:
         ordering = ['-date_creation']
+
 
 class TacheClient(models.Model):
     magasin = models.ForeignKey("Magasin", on_delete=models.CASCADE, null=True, blank=True)
